@@ -1,95 +1,91 @@
+// loading dependencies
+"use client"
+import { useEffect, useState } from 'react';
 import Image from 'next/image'
-import styles from './page.module.css'
+import divider from "./pattern-divider-desktop.svg"
+import dice from "./icon-dice.svg"
+import dividerAlt from "./divederAlt.svg"
+import moon from "./moon.svg"
+import sun from "./sun.svg"
 
 export default function Home() {
+  // settings states
+  const [content, setContent] = useState('')
+  const [id, setId] = useState('')
+  const [state, setState] = useState(false)
+  const [mainClass, setMainClass] = useState('')
+  const [pClass, setPClass] = useState('')
+  const [diviClass, setDiviClass] = useState('')
+  const [divi2Class, setDivi2Class] = useState('invi')
+  const [pictureSRC, setPictureSRC] = useState(moon)
+  const [btn, setBtn] = useState("circle")
+  // calling api
+  async function logAdvice() {
+    const url = 'https://api.adviceslip.com/advice' + '?nocache=' + new Date().getTime();
+    const res = await fetch(url)
+    const advice = await res.json()
+    setContent(String(advice['slip']['advice']))
+    setId(String(advice['slip']['id']))
+  }
+  useEffect(() => {
+    logAdvice()
+  },[])
+
+  // dark and light mode
+  useEffect(() => {
+    if(state == true){
+      document.body.classList.add("dark")
+    }
+    else if(state == false){
+      document.body.classList.remove("dark")
+    }
+  }, [state])
+
+  const onClick2 = () => {
+    if(state == false){
+      setMainClass("main")
+      setPClass("p")
+      setDiviClass("invi")
+      setDivi2Class("")
+      setBtn("circleD")
+      setPictureSRC(sun)
+      setState(true)
+    }
+    if(state == true){
+      setMainClass("")
+      setPClass("")
+      setDiviClass("")
+      setDivi2Class("invi")
+      setBtn("circle")
+      setPictureSRC(moon)
+      setState(false)
+    }
+  }
+
   return (
-    <main className={styles.main}>
-      <div className={styles.description}>
-        <p>
-          Get started by editing&nbsp;
-          <code className={styles.code}>src/app/page.tsx</code>
-        </p>
-        <div>
-          <a
-            href="https://vercel.com?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            By{' '}
-            <Image
-              src="/vercel.svg"
-              alt="Vercel Logo"
-              className={styles.vercelLogo}
-              width={100}
-              height={24}
-              priority
-            />
-          </a>
+    // html content
+    <main>
+      <button className="btn" id="btn" onClick={onClick2}>
+        <div className={btn} id="btnD">
+          <Image src={pictureSRC} height={30} width={30} alt=""/>
         </div>
-      </div>
-
-      <div className={styles.center}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js Logo"
-          width={180}
-          height={37}
-          priority
-        />
-      </div>
-
-      <div className={styles.grid}>
-        <a
-          href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Docs <span>-&gt;</span>
-          </h2>
-          <p>Find in-depth information about Next.js features and API.</p>
-        </a>
-
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Learn <span>-&gt;</span>
-          </h2>
-          <p>Learn about Next.js in an interactive course with&nbsp;quizzes!</p>
-        </a>
-
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Templates <span>-&gt;</span>
-          </h2>
-          <p>Explore the Next.js 13 playground.</p>
-        </a>
-
-        <a
-          href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Deploy <span>-&gt;</span>
-          </h2>
-          <p>
-            Instantly deploy your Next.js site to a shareable URL with Vercel.
-          </p>
-        </a>
-      </div>
+      </button>
+      <section className={mainClass} id="main">
+        <p className={pClass} id="p">
+        ADVICE #{id}
+        </p>
+        <p id="p2" className={pClass}>
+          &ldquo;{content}&rdquo;
+        </p>
+        <div className={state == false ? diviClass : divi2Class} id="divi">
+            <Image src={state == false ? divider : dividerAlt} alt="" width="630"/>
+        </div>
+        <button onClick={logAdvice}>
+          <div>
+            <Image src={dice} alt='' width={30}/>
+          </div>
+        </button>
+      </section>
     </main>
   )
 }
